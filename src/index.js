@@ -34,8 +34,17 @@ export default class FileInput extends React.Component {
       let reader = new FileReader();
 
       reader.onload = result => {
-        // Resolve both the FileReader result and its original file.
-        resolve([result, file]);
+        if (_this.props.as !== 'text') {
+          // Resolve both the FileReader result and its original file.
+          resolve([result, file]);
+          return;
+        }
+
+        var subReader = new FileReader();
+        subReader.onload = function (binaryResult) {
+          resolve([result, file, binaryResult]);
+        };
+        subReader.readAsBinaryString(file);
       };
 
       // Read the file with format based on this.props.as.
